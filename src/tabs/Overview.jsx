@@ -1,8 +1,10 @@
 import React from 'react';
 import { useCourse } from '../context/CourseContext';
 import { Mountain, MapPin, Clock, Ruler, CreditCard, TrendingUp } from 'lucide-react';
+import MapView from '../components/ui/MapView';
 
 export default function Overview() {
+
   const { courseData, availableCourses, selectedCourseId, setSelectedCourseId } = useCourse();
 
   if (!courseData) return <div className="text-center py-20 text-white/40">데이터를 불러오는 중...</div>;
@@ -29,35 +31,9 @@ export default function Overview() {
         ))}
       </section>
 
-      {/* Route SVG Map Placeholder */}
+      {/* Interactive Map */}
+      <MapView coordinates={summary.coordinates} />
 
-      <section className="glass rounded-3xl p-6 aspect-video flex flex-col items-center justify-center relative overflow-hidden group">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent opacity-50" />
-        <svg viewBox="0 0 400 200" className="w-full h-full relative z-10 drop-shadow-2xl">
-          <path
-            d="M 50 150 Q 100 50 150 100 T 250 80 T 350 120"
-            fill="none"
-            stroke="url(#grad)"
-            strokeWidth="4"
-            strokeLinecap="round"
-            className="animate-draw"
-          />
-          <defs>
-            <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#10b981" />
-              <stop offset="100%" stopColor="#3b82f6" />
-            </linearGradient>
-          </defs>
-          <circle cx="50" cy="150" r="4" fill="#10b981" />
-          <circle cx="350" cy="120" r="4" fill="#3b82f6" />
-          <text x="40" y="170" fill="white" fontSize="10" className="font-bold">화엄사</text>
-          <text x="340" y="140" fill="white" fontSize="10" className="font-bold">대원사</text>
-        </svg>
-        <div className="absolute bottom-4 right-4 flex items-center gap-2 text-xs text-white/40">
-          <MapPin size={12} />
-          <span>지리산 화대종주 루트</span>
-        </div>
-      </section>
 
       {/* Summary Cards */}
       <div className="grid grid-cols-2 gap-4">
