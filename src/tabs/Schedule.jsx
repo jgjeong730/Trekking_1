@@ -79,7 +79,19 @@ export default function Schedule() {
                   </span>
                 </div>
                 
+                {section.difficulty && (
+                  <div className={cn(
+                    "inline-flex items-center gap-1 text-[9px] font-black px-2 py-0.5 rounded-lg border mb-1",
+                    section.difficulty === '매우 높음' ? "bg-red-500/10 text-red-500 border-red-500/20" : 
+                    section.difficulty === '높음' ? "bg-orange-500/10 text-orange-500 border-orange-500/20" :
+                    "bg-primary/10 text-primary border-primary/20"
+                  )}>
+                    난이도: {section.difficulty}
+                  </div>
+                )}
+                
                 <div className="flex flex-wrap gap-x-4 gap-y-2 text-[11px] text-white/60">
+
                   {section.duration && (
                     <div className="flex items-center gap-1">
                       <span className="w-1 h-1 bg-white/20 rounded-full" />

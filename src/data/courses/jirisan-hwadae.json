@@ -5,9 +5,10 @@
     "path": "화엄사 → 대원사",
     "duration": "3박 4일",
     "distance": {
-      "total": 54.6,
-      "hiking": 45.6
+      "total": 45.7,
+      "hiking": 45.7
     },
+    "cumulativeAscent": 3149,
     "cost": 200300
   },
   "days": [
@@ -18,7 +19,8 @@
         { "id": "d1-s1", "type": "transport", "title": "서울남부터미널 출발", "time": "09:00 - 12:10", "duration": "3h 10m", "cost": 29000, "transport": "우등버스" },
         { "id": "d1-s2", "type": "meal", "title": "구례 점심식사", "time": "12:10 - 13:00", "duration": "50m", "cost": 10000 },
         { "id": "d1-s3", "type": "transport", "title": "구례터미널 → 화엄사 일주문", "time": "13:00 - 13:20", "duration": "20m", "cost": 20000, "transport": "택시", "note": "010-7118-0208" },
-        { "id": "d1-s4", "type": "hiking", "title": "화엄사 일주문 → 노고단 대피소", "time": "13:20 - 17:20", "duration": "4h", "distance": 7, "accumulated": 7, "checkpoints": ["용소", "연기암", "국수등", "중재", "집선대", "코재", "무넹기"], "note": "30분 휴식 포함" },
+        { "id": "d1-s4", "type": "hiking", "title": "화엄사 일주문 → 노고단 대피소", "time": "13:20 - 15:50", "duration": "2h 30m", "distance": 7, "accumulated": 7, "checkpoints": ["용소", "연기암", "국수등", "중재", "집선대", "코재", "무넹기"], "difficulty": "매우 높음", "note": "1,000m 급상승 구간 / 무넹기까지 고난도" },
+
         { "id": "d1-s5", "type": "event", "title": "노고단 대피소 → 노고단 고개 (일몰)", "time": "18:00 - 18:20", "duration": "20m", "distance": 1, "accumulated": 8, "note": "일몰: 18:29" },
         { "id": "d1-s6", "type": "stay", "title": "노고단 대피소 숙박 & 저녁", "time": "18:20 -", "cost": 22000, "note": "숙박 1.2만 / 저녁 1만" }
       ]
@@ -44,7 +46,7 @@
       "day": 3,
       "title": "연하천 → 장터목 대피소",
       "sections": [
-        { "id": "d3-s1", "type": "hiking", "title": "연하천 → 벽소령 → 세석 → 촛대봉", "time": "오전 - 오후" },
+        { "id": "d3-s1", "type": "hiking", "title": "연하천 → 벽소령 → 세석 → 촛대봉", "time": "오전 - 오후", "difficulty": "보통", "note": "장거리 능선 구간 (체력 안배 필수)" },
         { "id": "d3-s2", "type": "hiking", "title": "촛대봉 → 연하봉 → 제석봉(1,808m)", "time": "오후" },
         { "id": "d3-s3", "type": "hiking", "title": "제석봉 → 통천문 → 천왕봉(1,915m)", "time": "16:15 - 16:40", "duration": "25m", "distance": 0.5, "accumulated": 11.4, "note": "천왕봉 사진 촬영 16:40-17:00" },
         { "id": "d3-s4", "type": "hiking", "title": "천왕봉 → 장터목 대피소", "time": "17:00 - 18:05", "note": "일몰 18:31 감상" },
@@ -62,7 +64,7 @@
         { "id": "d4-s5", "type": "hiking", "title": "치밭목 대피소 → 무제치기폭포", "time": "09:40 - 10:10", "duration": "30m", "distance": 1.0, "accumulated": 6.7 },
         { "id": "d4-s6", "type": "hiking", "title": "무제치기폭포 → 삼거리(새재 갈림길)", "time": "10:10 - 10:40", "duration": "30m", "distance": 0.8, "accumulated": 7.5 },
         { "id": "d4-s7", "type": "hiking", "title": "삼거리 → 유평", "time": "10:40 - 12:10", "duration": "1h 30m", "distance": 4.4, "accumulated": 11.9 },
-        { "id": "d4-s8", "type": "hiking", "title": "유평 → 대원사", "time": "12:10 - 12:40", "duration": "30m", "distance": 1.5, "accumulated": 13.4 },
+        { "id": "d4-s8", "type": "hiking", "title": "유평 → 대원사", "time": "12:10 - 12:40", "duration": "30m", "distance": 1.5, "accumulated": 13.4, "difficulty": "높음", "note": "급경사 하산 주의 / 무릎 보호대 권장" },
         { "id": "d4-s9", "type": "transport", "title": "대원사 → 산청터미널", "time": "오후", "cost": 16000, "transport": "도보+버스", "note": "식사 1.5만 / 버스 1,000" },
         { "id": "d4-s10", "type": "transport", "title": "산청터미널 → 서울남부터미널", "time": "16:35 - 19:35", "cost": 28300, "transport": "우등버스" }
       ]

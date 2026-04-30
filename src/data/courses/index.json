@@ -3,5 +3,11 @@
     "id": "jirisan-hwadae",
     "name": "지리산 화대종주",
     "icon": "mountain"
+  },
+  {
+    "id": "jirisan-seongjung",
+    "name": "지리산 성중종주",
+    "icon": "mountain"
   }
+
 ]

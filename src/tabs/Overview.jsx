@@ -1,9 +1,9 @@
 import React from 'react';
 import { useCourse } from '../context/CourseContext';
-import { Mountain, MapPin, Clock, Ruler, CreditCard } from 'lucide-react';
+import { Mountain, MapPin, Clock, Ruler, CreditCard, TrendingUp } from 'lucide-react';
 
 export default function Overview() {
-  const { courseData } = useCourse();
+  const { courseData, availableCourses, selectedCourseId, setSelectedCourseId } = useCourse();
 
   if (!courseData) return <div className="text-center py-20 text-white/40">데이터를 불러오는 중...</div>;
 
@@ -11,7 +11,26 @@ export default function Overview() {
 
   return (
     <div className="space-y-6">
+      {/* Course Selector */}
+      <section className="flex gap-2 overflow-x-auto pb-2">
+        {availableCourses.map((course) => (
+          <button
+            key={course.id}
+            onClick={() => setSelectedCourseId(course.id)}
+            className={cn(
+              "px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all border",
+              selectedCourseId === course.id
+                ? "bg-primary/20 border-primary text-primary"
+                : "border-white/5 text-white/40 hover:border-white/10"
+            )}
+          >
+            {course.name}
+          </button>
+        ))}
+      </section>
+
       {/* Route SVG Map Placeholder */}
+
       <section className="glass rounded-3xl p-6 aspect-video flex flex-col items-center justify-center relative overflow-hidden group">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent opacity-50" />
         <svg viewBox="0 0 400 200" className="w-full h-full relative z-10 drop-shadow-2xl">
@@ -44,9 +63,12 @@ export default function Overview() {
       <div className="grid grid-cols-2 gap-4">
         <SummaryCard icon={Clock} label="기간" value={summary.duration} />
         <SummaryCard icon={Ruler} label="총 거리" value={`${summary.distance.total}km`} />
-        <SummaryCard icon={Mountain} label="등반 거리" value={`${summary.distance.hiking}km`} />
+        {summary.cumulativeAscent && (
+          <SummaryCard icon={TrendingUp} label="누적 상승" value={`${summary.cumulativeAscent.toLocaleString()}m`} color="text-emerald-400" />
+        )}
         <SummaryCard icon={CreditCard} label="예상 비용" value={`${summary.cost.toLocaleString()}원`} color="text-amber-400" />
       </div>
+
 
       {/* Day Summaries */}
       <section className="space-y-4">
