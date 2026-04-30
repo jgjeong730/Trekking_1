@@ -3,7 +3,9 @@ import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
+  base: "/Trekking_1/",
   plugins: [
+
     react(),
     VitePWA({
       registerType: 'autoUpdate',
