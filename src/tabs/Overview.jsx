@@ -45,8 +45,9 @@ export default function Overview() {
           </h2>
           <span className="text-[10px] font-bold text-white/30 uppercase tracking-widest">Interactive Map</span>
         </div>
-        <MapView coordinates={summary.coordinates} />
+        <MapView coordinates={summary.coordinates} segments={summary.segments} />
       </section>
+
 
       {/* Summary Grid */}
       <div className="grid grid-cols-2 gap-4">
