@@ -1,120 +1,163 @@
 import React from 'react';
 import { useCourse } from '../context/CourseContext';
-import { Mountain, MapPin, Clock, Ruler, CreditCard, TrendingUp, Sun, Wind, CloudRain, ShieldCheck } from 'lucide-react';
+import {
+  MapPin, Clock, Ruler, CreditCard, TrendingUp,
+  Sun, Wind, ShieldCheck, Mountain, ChevronRight,
+} from 'lucide-react';
 import MapView from '../components/ui/MapView';
 import ElevationChart from '../components/ui/ElevationChart';
+
+/* ── helper ── */
+function cn(...cls) { return cls.filter(Boolean).join(' '); }
+
+/* ── Stat card ── */
+function StatCard({ icon: Icon, label, value, accent = 'text-primary' }) {
+  return (
+    <div className="card flex flex-col gap-3 group cursor-default">
+      <div className="flex items-center gap-2">
+        <div className="w-7 h-7 rounded-lg bg-white/5 flex items-center justify-center
+                        group-hover:bg-primary/10 transition-colors duration-200">
+          <Icon size={14} className="text-white/40 group-hover:text-primary transition-colors duration-200" />
+        </div>
+        <span className="text-[9px] font-black text-white/30 uppercase tracking-widest">{label}</span>
+      </div>
+      <div className={cn('text-xl font-black', accent)}>{value}</div>
+    </div>
+  );
+}
 
 export default function Overview() {
   const { courseData, availableCourses, selectedCourseId, setSelectedCourseId, equipmentChecks } = useCourse();
 
-  if (!courseData) return <div className="text-center py-20 text-white/40">데이터를 불러오는 중...</div>;
+  if (!courseData) return (
+    <div className="flex items-center justify-center py-20 text-white/20 text-sm font-medium">
+      데이터 로딩 중…
+    </div>
+  );
 
   const { summary, days, equipment } = courseData;
-
-  // Equipment Prep Progress
-  const totalItems = equipment.reduce((acc, cat) => acc + cat.items.length, 0);
-  const checkedItems = Object.values(equipmentChecks).filter(v => v).length;
-  const prepPercent = Math.round((checkedItems / totalItems) * 100);
+  const totalItems   = equipment.reduce((acc, c) => acc + c.items.length, 0);
+  const checkedItems = Object.values(equipmentChecks).filter(Boolean).length;
+  const prepPct      = totalItems ? Math.round((checkedItems / totalItems) * 100) : 0;
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      {/* Course Selector */}
-      <section className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-        {availableCourses.map((course) => (
+    <div className="space-y-6 pb-2">
+
+      {/* ── Course Selector ── */}
+      <div className="flex gap-2 overflow-x-auto scrollbar-hide -mx-1 px-1 pb-1">
+        {availableCourses.map((c) => (
           <button
-            key={course.id}
-            onClick={() => setSelectedCourseId(course.id)}
+            key={c.id}
+            onClick={() => setSelectedCourseId(c.id)}
             className={cn(
-              "px-4 py-2 rounded-2xl text-xs font-black whitespace-nowrap transition-all border-2",
-              selectedCourseId === course.id
-                ? "bg-primary border-primary text-white shadow-lg shadow-primary/20"
-                : "glass border-transparent text-white/40 hover:text-white/60"
+              'flex-shrink-0 px-4 py-1.5 rounded-xl text-[11px] font-black tracking-tight',
+              'border transition-all duration-200',
+              selectedCourseId === c.id
+                ? 'bg-primary text-white border-primary shadow-lg shadow-primary/20'
+                : 'glass text-white/40 border-transparent hover:text-white/60 hover:border-white/10',
             )}
           >
-            {course.name}
+            {c.name}
           </button>
         ))}
-      </section>
+      </div>
 
-      {/* Hero Section with Map */}
-      <section className="space-y-4">
-        <div className="flex justify-between items-end px-1">
-          <h2 className="text-xl font-black flex items-center gap-2">
-            <MapPin size={20} className="text-primary" />
+      {/* ── Map ── */}
+      <section className="space-y-3">
+        <div className="flex items-center justify-between px-0.5">
+          <h2 className="flex items-center gap-2 text-sm font-black text-white/80">
+            <MapPin size={14} className="text-primary" strokeWidth={2.5} />
             트레킹 경로
           </h2>
-          <span className="text-[10px] font-bold text-white/30 uppercase tracking-widest">Interactive Map</span>
+          <span className="text-[9px] font-bold text-white/20 uppercase tracking-widest">
+            OpenStreetMap
+          </span>
         </div>
-        <MapView coordinates={summary.coordinates} segments={summary.segments} waypoints={summary.waypoints} />
+        <MapView
+          coordinates={summary.coordinates}
+          segments={summary.segments}
+          waypoints={summary.waypoints}
+        />
       </section>
 
-
-      {/* Summary Grid */}
-      <div className="grid grid-cols-2 gap-4">
-        <SummaryCard icon={Clock} label="소요 기간" value={summary.duration} />
-        <SummaryCard icon={Ruler} label="총 거리" value={`${summary.distance.total}km`} />
+      {/* ── Stats grid ── */}
+      <div className="grid grid-cols-2 gap-3">
+        <StatCard icon={Clock}     label="소요 기간"  value={summary.duration} />
+        <StatCard icon={Ruler}     label="총 거리"    value={`${summary.distance.total} km`} />
         {summary.cumulativeAscent && (
-          <SummaryCard icon={TrendingUp} label="누적 상승" value={`${summary.cumulativeAscent.toLocaleString()}m`} color="text-emerald-400" />
+          <StatCard icon={TrendingUp} label="누적 상승" accent="text-emerald-400"
+                    value={`${summary.cumulativeAscent.toLocaleString()} m`} />
         )}
-        <SummaryCard icon={CreditCard} label="예상 비용" value={`${summary.cost.toLocaleString()}원`} color="text-amber-400" />
+        <StatCard icon={CreditCard} label="예상 비용" accent="text-amber-400"
+                  value={`${(summary.cost / 10000).toFixed(0)}만원`} />
       </div>
 
-      {/* Weather & Prep Widgets */}
-      <div className="grid grid-cols-2 gap-4">
-        <div className="glass-dark rounded-2xl p-4 flex flex-col gap-3">
-          <div className="flex justify-between items-center text-white/40">
-            <Sun size={14} />
-            <span className="text-[9px] font-black uppercase">천왕봉 날씨</span>
+      {/* ── Mini widgets ── */}
+      <div className="grid grid-cols-2 gap-3">
+        {/* Weather widget */}
+        <div className="card flex flex-col gap-3">
+          <div className="flex items-center justify-between text-white/30">
+            <Sun size={13} />
+            <span className="text-[8px] font-black uppercase tracking-widest">천왕봉 날씨</span>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="text-2xl font-black">12°</span>
-            <div className="text-[10px] text-white/60 font-medium">
-              <p>맑음</p>
+          <div className="flex items-end gap-2">
+            <span className="text-2xl font-black leading-none">12°</span>
+            <div className="text-[10px] text-white/50 mb-0.5 space-y-0.5">
+              <p className="font-bold">맑음</p>
               <div className="flex items-center gap-1">
-                <Wind size={8} /> 4m/s
+                <Wind size={8} /> <span>4 m/s</span>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="glass-dark rounded-2xl p-4 flex flex-col gap-3">
-          <div className="flex justify-between items-center text-white/40">
-            <ShieldCheck size={14} />
-            <span className="text-[9px] font-black uppercase">준비 현황</span>
+        {/* Prep status */}
+        <div className="card flex flex-col gap-3">
+          <div className="flex items-center justify-between text-white/30">
+            <ShieldCheck size={13} />
+            <span className="text-[8px] font-black uppercase tracking-widest">장비 준비</span>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="text-2xl font-black">{prepPercent}%</span>
-            <div className="flex-1 h-1.5 bg-white/5 rounded-full overflow-hidden">
-              <div className="h-full bg-primary" style={{ width: `${prepPercent}%` }} />
+          <div className="flex flex-col gap-2">
+            <span className="text-2xl font-black leading-none">{prepPct}%</span>
+            <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-primary rounded-full transition-all duration-500"
+                style={{ width: `${prepPct}%` }}
+              />
             </div>
           </div>
         </div>
       </div>
 
-      {/* Elevation Chart */}
+      {/* ── Elevation chart ── */}
       <ElevationChart data={summary.elevationProfile} />
 
-      {/* Day Summaries */}
-      <section className="space-y-4">
-        <h2 className="text-xl font-black px-1">일정 요약</h2>
-        <div className="space-y-4">
+      {/* ── Day cards ── */}
+      <section className="space-y-3">
+        <h2 className="text-sm font-black text-white/60 uppercase tracking-widest px-0.5">일정 요약</h2>
+        <div className="space-y-3">
           {days.map((day) => (
-            <div key={day.day} className="group relative overflow-hidden glass-dark rounded-3xl p-5 border border-white/5 hover:border-primary/20 transition-all">
-              <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-                <Mountain size={80} />
+            <div key={day.day}
+              className="card group relative overflow-hidden border-transparent
+                         hover:border-white/10 transition-all duration-200 cursor-default">
+              {/* subtle bg icon */}
+              <div className="absolute top-3 right-3 opacity-[0.04] group-hover:opacity-[0.07]
+                              transition-opacity duration-200 pointer-events-none">
+                <Mountain size={72} />
               </div>
-              <div className="relative z-10 flex flex-col gap-3">
-                <div className="flex justify-between items-center">
-                  <div className="bg-primary/20 text-primary px-3 py-1 rounded-xl text-[10px] font-black uppercase tracking-tighter">
-                    Day {day.day}
-                  </div>
+              <div className="flex items-start gap-3">
+                <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-primary/10 border border-primary/20
+                                flex items-center justify-center text-[10px] font-black text-primary">
+                  D{day.day}
                 </div>
-                <div>
-                  <h3 className="font-bold text-lg mb-1 leading-tight">{day.title}</h3>
-                  <p className="text-[11px] text-white/40 line-clamp-1">
-                    {day.sections.filter(s => s.type === 'hiking').map(s => s.title).join(' → ')}
+                <div className="flex-1 min-w-0">
+                  <p className="font-bold text-sm text-white leading-snug">{day.title}</p>
+                  <p className="text-[11px] text-white/35 mt-1 line-clamp-1 font-medium">
+                    {day.sections.filter(s => s.type === 'hiking').map(s => s.title).join(' · ')}
                   </p>
                 </div>
+                <ChevronRight size={14} className="text-white/15 shrink-0 mt-0.5
+                                                   group-hover:text-white/30 transition-colors duration-200" />
               </div>
             </div>
           ))}
@@ -122,20 +165,4 @@ export default function Overview() {
       </section>
     </div>
   );
-}
-
-function SummaryCard({ icon: Icon, label, value, color = "text-primary" }) {
-  return (
-    <div className="group glass-dark rounded-3xl p-5 flex flex-col gap-3 border border-white/5 hover:bg-white/5 transition-all">
-      <div className="flex items-center gap-2 text-white/30 group-hover:text-white/50 transition-colors">
-        <Icon size={16} />
-        <span className="text-[9px] uppercase tracking-widest font-black">{label}</span>
-      </div>
-      <div className={cn("text-xl font-black", color)}>{value}</div>
-    </div>
-  );
-}
-
-function cn(...inputs) {
-  return inputs.filter(Boolean).join(' ');
 }

@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { useCourse } from '../context/CourseContext';
-import { Check, Filter, Package, AlertTriangle, ShieldCheck, Heart } from 'lucide-react';
-import { clsx } from 'clsx';
-import { twMerge } from 'tailwind-merge';
+import { Check, SlidersHorizontal, AlertTriangle, ShieldCheck, Sparkles } from 'lucide-react';
 
-function cn(...inputs) {
-  return twMerge(clsx(inputs));
-}
+const PRIORITY = {
+  '필수': { cls: 'bg-red-500/8 text-red-400 border-red-500/15',    Icon: AlertTriangle },
+  '권장': { cls: 'bg-primary/8 text-primary border-primary/15',     Icon: ShieldCheck },
+  '선택': { cls: 'bg-white/4 text-white/35 border-white/8',         Icon: Sparkles },
+};
 
 export default function Equipment() {
   const { courseData, equipmentChecks, toggleEquipment } = useCourse();
@@ -14,109 +14,119 @@ export default function Equipment() {
 
   if (!courseData) return null;
 
-  const totalItems = courseData.equipment.reduce((acc, cat) => acc + cat.items.length, 0);
-  const checkedItems = Object.values(equipmentChecks).filter(v => v).length;
-  const progressPercent = (checkedItems / totalItems) * 100;
+  const totalItems   = courseData.equipment.reduce((acc, c) => acc + c.items.length, 0);
+  const checkedItems = Object.values(equipmentChecks).filter(Boolean).length;
+  const pct          = totalItems ? Math.round((checkedItems / totalItems) * 100) : 0;
 
   return (
-    <div className="space-y-6">
-      {/* Stats & Controls */}
-      <section className="glass rounded-3xl p-6 space-y-4">
-        <div className="flex justify-between items-center">
+    <div className="space-y-6 pb-2">
+
+      {/* ── Header card ── */}
+      <div className="card space-y-4">
+        <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-xl font-bold">장비 체크리스트</h2>
-            <p className="text-xs text-white/40">준비 완료: {checkedItems} / {totalItems}</p>
+            <h2 className="text-base font-black text-white">장비 체크리스트</h2>
+            <p className="text-[10px] text-white/30 mt-0.5 font-medium">
+              {checkedItems} / {totalItems}개 준비 완료
+            </p>
           </div>
-          <button 
-            onClick={() => setFilterUnchecked(!filterUnchecked)}
-            className={cn(
-              "p-2 rounded-xl border transition-all",
-              filterUnchecked ? "bg-primary/20 border-primary text-primary" : "border-white/10 text-white/40"
-            )}
+          <button
+            onClick={() => setFilterUnchecked(v => !v)}
+            className={[
+              'w-8 h-8 rounded-xl border flex items-center justify-center',
+              'transition-all duration-200',
+              filterUnchecked
+                ? 'bg-primary/10 border-primary/30 text-primary'
+                : 'border-white/8 text-white/30 hover:border-white/15 hover:text-white/50',
+            ].join(' ')}
           >
-            <Filter size={18} />
+            <SlidersHorizontal size={14} />
           </button>
         </div>
 
-        <div className="h-2 bg-white/5 rounded-full overflow-hidden">
-          <div 
-            className="h-full bg-primary transition-all duration-500"
-            style={{ width: `${progressPercent}%` }}
+        <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
+          <div
+            className="h-full bg-primary rounded-full transition-all duration-500"
+            style={{ width: `${pct}%` }}
           />
         </div>
-      </section>
 
-      {/* Categories */}
-      <div className="space-y-8">
-        {courseData.equipment.map((category) => {
-          const visibleItems = filterUnchecked 
-            ? category.items.filter(item => !equipmentChecks[item.name])
-            : category.items;
+        <div className="flex items-center justify-between text-[9px] font-black">
+          <span className="text-white/20">0%</span>
+          <span className="text-primary">{pct}%</span>
+          <span className="text-white/20">100%</span>
+        </div>
+      </div>
 
-          if (visibleItems.length === 0) return null;
+      {/* ── Categories ── */}
+      <div className="space-y-6">
+        {courseData.equipment.map((cat) => {
+          const items = filterUnchecked
+            ? cat.items.filter(i => !equipmentChecks[i.name])
+            : cat.items;
+          if (items.length === 0) return null;
 
           return (
-            <div key={category.category} className="space-y-3">
-              <h3 className="text-sm font-black text-primary/80 uppercase tracking-widest px-2">
-                {category.category}
-              </h3>
-              <div className="grid grid-cols-1 gap-2">
-                {visibleItems.map((item) => (
-                  <button
-                    key={item.name}
-                    onClick={() => toggleEquipment(item.name)}
-                    className={cn(
-                      "flex items-center gap-4 glass-dark rounded-2xl p-4 text-left transition-all",
-                      equipmentChecks[item.name] ? "opacity-40 grayscale-[0.5]" : "hover:bg-white/5"
-                    )}
-                  >
-                    <div className={cn(
-                      "w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all",
-                      equipmentChecks[item.name] 
-                        ? "bg-primary border-primary text-white" 
-                        : "border-white/10 text-transparent"
-                    )}>
-                      <Check size={14} strokeWidth={4} />
-                    </div>
-                    <div className="flex-1 flex justify-between items-center">
-                      <span className={cn("text-sm font-medium", equipmentChecks[item.name] && "line-through")}>
+            <div key={cat.category} className="space-y-2">
+              <div className="flex items-center gap-2 px-0.5">
+                <span className="text-[9px] font-black text-primary/70 uppercase tracking-widest">
+                  {cat.category}
+                </span>
+                <div className="flex-1 h-px bg-white/5" />
+                <span className="text-[9px] text-white/20 font-bold">
+                  {cat.items.filter(i => equipmentChecks[i.name]).length}/{cat.items.length}
+                </span>
+              </div>
+
+              <div className="space-y-1.5">
+                {items.map((item) => {
+                  const done = !!equipmentChecks[item.name];
+                  const p    = PRIORITY[item.priority] || PRIORITY['선택'];
+                  const PIcon = p.Icon;
+
+                  return (
+                    <button
+                      key={item.name}
+                      onClick={() => toggleEquipment(item.name)}
+                      className={[
+                        'w-full text-left glass-dark rounded-xl px-4 py-3',
+                        'flex items-center gap-3 group',
+                        'transition-all duration-200',
+                        done ? 'opacity-35' : 'hover:bg-white/[0.03] hover:border-white/10',
+                      ].join(' ')}
+                    >
+                      {/* Checkbox */}
+                      <div className={[
+                        'w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0',
+                        'transition-all duration-200',
+                        done
+                          ? 'bg-primary border-primary'
+                          : 'border-white/12 group-hover:border-white/20',
+                      ].join(' ')}>
+                        {done && <Check size={11} strokeWidth={3.5} className="text-white" />}
+                      </div>
+
+                      {/* Name */}
+                      <span className={[
+                        'flex-1 text-sm font-bold',
+                        done ? 'line-through text-white/30' : 'text-white',
+                      ].join(' ')}>
                         {item.name}
                       </span>
-                      <Badge type={item.priority} />
-                    </div>
-                  </button>
-                ))}
+
+                      {/* Priority badge */}
+                      <span className={`badge ${p.cls} shrink-0`}>
+                        <PIcon size={9} />
+                        {item.priority}
+                      </span>
+                    </button>
+                  );
+                })}
               </div>
             </div>
           );
         })}
       </div>
     </div>
-  );
-}
-
-function Badge({ type }) {
-  const styles = {
-    '필수': 'bg-red-500/10 text-red-500 border-red-500/20',
-    '권장': 'bg-primary/10 text-primary border-primary/20',
-    '선택': 'bg-white/5 text-white/40 border-white/10',
-  };
-
-  const icons = {
-    '필수': AlertTriangle,
-    '권장': ShieldCheck,
-    '선택': Heart,
-  };
-
-  const Icon = icons[type] || Package;
-
-  return (
-    <span className={cn(
-      "text-[9px] font-black px-2 py-1 rounded-lg border flex items-center gap-1",
-      styles[type]
-    )}>
-      <Icon size={10} />
-      {type}
-    </span>
   );
 }
